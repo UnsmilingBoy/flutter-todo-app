@@ -25,8 +25,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  final _controller = TextEditingController();
-
   void checkBoxChanged(bool? value, int index) {
     setState(() {
       db.toDoList[index][1] = !db.toDoList[index][1];
@@ -34,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     db.updateDataBase();
   }
 
+  final _controller = TextEditingController();
   void createNewTask() {
     showDialog(
       context: context,
@@ -41,18 +40,28 @@ class _HomePageState extends State<HomePage> {
         return DialogBox(
           controller: _controller,
           onSave: saveNewTask,
-          onCancel: () => Navigator.of(context).pop(),
+          onCancel: cancelNewTask,
         );
       },
     );
   }
 
+  void cancelNewTask() {
+    Navigator.of(context).pop();
+    _controller.text = '';
+  }
+
   void saveNewTask() {
-    setState(() {
-      db.toDoList.add([_controller.text, false]);
+    if (_controller.text == '') {
       Navigator.of(context).pop();
-    });
-    db.updateDataBase();
+    } else {
+      setState(() {
+        db.toDoList.add([_controller.text, false]);
+        Navigator.of(context).pop();
+        _controller.text = '';
+      });
+      db.updateDataBase();
+    }
   }
 
   void deleteTask(index) {
